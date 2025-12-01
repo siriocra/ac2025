@@ -24,7 +24,7 @@ fn read_file(filename:String) -> String {
 }
 
 fn main() {
-    let d1_file = "d1_p1.txt";
+    let d1_file = "d1_p2.txt";
     let input = read_file(d1_file.to_string());
-    println!("{}", day1::part1(input));
+    println!("{}", day1::part2(input));
 }
