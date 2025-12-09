@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, i64};
+use std::cmp::Reverse;
 
 use array2d::Array2D;
 use dsu_tree::DsuRoot;
@@ -8,29 +8,29 @@ fn parse_input(input: String) -> Vec<Vec<i64>> {
     for line in input.lines() {
         coords.push(line.split(',').map(|x| x.parse::<i64>().unwrap()).collect::<Vec<_>>());
     }
-    return coords;
+    coords
 }
 
-fn dist(p1: &Vec<i64>, p2: &Vec<i64>) -> i64 {
+fn dist(p1: &[i64], p2: &[i64]) -> i64 {
     let mut distance: i64 = 0;
     for x in 0..p1.len() {
         distance += (p2[x] - p1[x]) * (p2[x] - p1[x]);
     }
-    return distance;
+    distance
 }
 
-fn calc_distances(coords: &Vec<Vec<i64>>) -> Array2D<i64> {
+fn calc_distances(coords: &[Vec<i64>]) -> Array2D<i64> {
     let mut distances = Array2D::filled_with(0, coords.len(), coords.len());
     for i in 0..coords.len() {
         for j in 0..coords.len() {
             distances[(i, j)] = dist(&coords[i], &coords[j]);
         }
     }
-    return distances;
+    distances
 }
 
 fn calc_circiuts(coords: &Vec<Vec<i64>>, turns: i32) -> (Vec<i32>, usize, usize) {
-    let mut distances = calc_distances(&coords);
+    let mut distances = calc_distances(coords);
     let mut roots: Vec<DsuRoot<_>> = Vec::new();
     for i in 0..coords.len() {
         roots.push(DsuRoot::new(i+1));
@@ -88,7 +88,7 @@ fn calc_circiuts(coords: &Vec<Vec<i64>>, turns: i32) -> (Vec<i32>, usize, usize)
         circuits.push(circuit);
     }
     for circuit in &circuits {
-        print!(" {} ", circuit);
+        print!(" {circuit} ");
     }
     println!();
     circuits.sort_unstable_by_key(|x| Reverse(*x));
