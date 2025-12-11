@@ -2,6 +2,7 @@ use std::cmp::min;
 
 use itertools::max;
 use regex::Regex;
+use z3::{Optimize, Solver, ast::Int};
 
 fn parse_input(input: String) -> Vec<(Vec<bool>, Vec<Vec<u32>>, Vec<u32>)> {
     let re_config = Regex::new(r"\[([#.]+)\]").unwrap();
@@ -94,12 +95,55 @@ fn brute_force_joltage(cur_index: usize, presses: u32, cur_config: &mut [u32], b
     min_presses
 }
 
-pub fn part2(input: String) -> u32 {
+fn z3(buttons: &[Vec<u32>], joltage: &[u32], max_joltage: u32) -> u64 {
+    let solver = Optimize::new();
+    let mut variables = Vec::new();
+    for i in 0..buttons.len() {
+        let b = Int::fresh_const(format!("button{i}").as_str());
+        solver.assert(&b.ge(0));
+        solver.assert(&b.le(max_joltage));
+        variables.push(b);
+    }
+    for j in 0..joltage.len() {
+        let mut sum = Int::from_i64(0);
+        for i in 0..buttons.len() {
+            if buttons[i].contains(&(j as u32)) {
+                sum += &variables[i];
+            }
+        }
+        solver.assert(&sum.eq(joltage[j]));
+    }
+    let mut button_presses = Int::from_i64(0);
+    for b in variables {
+        button_presses += &b;
+    }
+    solver.minimize(&button_presses);
+    match solver.check(&[]) {
+        z3::SatResult::Sat => {
+            solver.get_model().unwrap().eval(&button_presses, true).unwrap().as_u64().unwrap()
+        },
+        _ => panic!()
+    }
+}
+
+pub fn part2_slow(input: String) -> u32 {
     let machines = parse_input(input);
     let mut ans = 0;
     for (_, buttons, joltage) in machines {
         let max_joltage = joltage.iter().max().unwrap();
         let presses = brute_force_joltage(0, 0, &mut joltage.clone(), &buttons, *max_joltage);
+        dbg!(presses);
+        ans += presses;
+    }
+    ans
+}
+
+pub fn part2(input: String) -> u64 {
+    let machines = parse_input(input);
+    let mut ans = 0;
+    for (_, buttons, joltage) in machines {
+        let max_joltage = joltage.iter().max().unwrap();
+        let presses = z3(&buttons, &joltage, *max_joltage);
         dbg!(presses);
         ans += presses;
     }

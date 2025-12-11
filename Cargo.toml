@@ -8,6 +8,8 @@ array2d = "0.3.2"
 dsu-tree = "0.1.0"
 itertools = "0.14.0"
 regex = "1.12.2"
+z3 = "0.19.6"
+z3-sys = { version = "0.10.3", features = ["gh-release"] }
 
 [lints.clippy]
 pedantic = "warn"
