@@ -9,6 +9,7 @@ mod day8;
 mod day9;
 mod day10;
 mod day11;
+mod day12;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
@@ -34,7 +35,7 @@ fn read_file(filename: &str) -> String {
 }
 
 fn main() {
-    let d11_file = "d11_p2.txt";
-    let input = read_file(d11_file);
-    println!("{}", day11::part2(input));
+    let d12_file = "d12_p1.txt";
+    let input = read_file(d12_file);
+    println!("{}", day12::part1(input));
 }
